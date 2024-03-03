@@ -1,27 +1,28 @@
-// createTask.js
+// completeTask.js
 const fs = require("fs").promises;
 const path = require("path");
 
-exports.handler = async (event, context) => {
+module.exports.handler = async (event, context) => {
   try {
     // Parse request body
-    const { taskName } = JSON.parse(event.body);
+    const { taskId } = JSON.parse(event.body);
 
     // Read todos from file
     const todosPath = path.join(__dirname, "data", "todos.json");
     const todosData = await fs.readFile(todosPath, "utf-8");
-    const todos = JSON.parse(todosData);
+    const { todos } = JSON.parse(todosData);
 
-    // Create new task
-    const newTask = { id: Date.now(), name: taskName, completed: false };
-    todos.push(newTask);
+    // Mark task as complete
+    const updatedTodos = todos.map((task) =>
+      task.id === taskId ? { ...task, completed: true } : task
+    );
 
     // Write updated todos to file
-    await fs.writeFile(todosPath, JSON.stringify(todos, null, 2));
+    await fs.writeFile(todosPath, JSON.stringify({ todos: updatedTodos }, null, 2));
 
     return {
       statusCode: 200,
-      body: JSON.stringify(newTask),
+      body: JSON.stringify({ id: taskId }),
     };
   } catch (error) {
     return {

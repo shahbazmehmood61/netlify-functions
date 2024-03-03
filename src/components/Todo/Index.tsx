@@ -1,7 +1,7 @@
 "use client";
 import { TODO } from "@/types/todo";
 import React, { useEffect, useState } from "react";
-import TodoList from "./TodoList";
+import Todos from "./Todos";
 
 function Index() {
   const [name, setName] = useState<string>("");
@@ -14,7 +14,11 @@ function Index() {
   function fetchTodos() {
     fetch("/.netlify/functions/getTodos")
       .then((response) => response.json())
-      .then((data) => setTodos(data))
+      .then((data) => {
+        if (data && !data.error) {
+          setTodos(data.todos);
+        }
+      })
       .catch((error) => console.error("Error fetching todos:", error));
   }
 
@@ -35,22 +39,23 @@ function Index() {
       .catch((error) => console.error("Error creating todo:", error));
   }
 
-  return (
-    <div>
-      <form onSubmit={createTodo}>
-        <input
-          className="border border-black mr-3 py-1 px-3 rounded-md"
-          type="text"
-          value={name}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => setName(event.target.value)}
-        />
-        <button type="submit" className=" bg-gray-400 py-1 px-3 rounded-md">
-          Create
-        </button>
-      </form>
-      <TodoList todos={todos} />
-    </div>
-  );
+  function completeTodo(id: number) {
+    fetch("/.netlify/functions/completeTodo", {
+      method: "POST",
+      body: JSON.stringify({ taskId: id }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) => (todo.id === id ? { ...todo, completed: true } : todo))
+        );
+      })
+      .catch((error) => console.error("Error creating todo:", error));
+  }
+
+  const props = { createTodo, name, setName, completeTodo, todos };
+
+  return <Todos {...props} />;
 }
 
 export default Index;
