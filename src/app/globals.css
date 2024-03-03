@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Style for the map */
+.map {
+  position: absolute !important;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}

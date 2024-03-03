@@ -2,3 +2,7 @@ server
 node_modules
 .next
 src/hooks
+# Local Netlify folder
+.netlify
+.env
+Map
