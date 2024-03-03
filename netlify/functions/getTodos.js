@@ -6,7 +6,7 @@ const path = require("path");
 module.exports.handler = async (event, context) => {
   try {
     // Read todos from file
-    const todosPath = path.join(__dirname, "data", "todos.json");
+    const todosPath = path.join(__dirname, "../..", "public", "data", "todos.json");
     console.log(todosPath, "todosPath");
     const todosData = await fs.readFile(todosPath, "utf-8");
     const todos = JSON.parse(todosData);
